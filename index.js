@@ -37,7 +37,10 @@ const ping = (url, timeout) => {
   })
 }
 
-const homeDirectory = os.homedir()
+const homeDirectory = path.join(
+  os.homedir(),
+  core.getInput('package-directory')
+)
 
 const useYarn = fs.existsSync('yarn.lock')
 const lockFilename = useYarn
