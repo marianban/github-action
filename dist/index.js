@@ -2436,6 +2436,8 @@ const homeDirectory = path.join(
   core.getInput('package-directory')
 )
 
+console.log('home directory', homeDirectory)
+
 const useYarn = fs.existsSync('yarn.lock')
 const lockFilename = useYarn
   ? 'yarn.lock'
