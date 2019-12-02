@@ -2522,6 +2522,10 @@ const saveCachedCypressBinary = () => {
   )
 }
 
+const execOptions = {
+  cwd: core.getInput('package-directory')
+}
+
 const install = () => {
   // prevent lots of progress messages during install
   core.exportVariable('CI', '1')
@@ -2537,9 +2541,11 @@ const install = () => {
     core.debug('installing NPM dependencies using Yarn')
     return io.which('yarn', true).then(yarnPath => {
       core.debug(`yarn at "${yarnPath}"`)
-      return exec.exec(quote(yarnPath), [
-        '--frozen-lockfile'
-      ])
+      return exec.exec(
+        quote(yarnPath),
+        ['--frozen-lockfile'],
+        execOptions
+      )
     })
   } else {
     core.debug('installing NPM dependencies')
@@ -2550,11 +2556,7 @@ const install = () => {
 
     return io.which('npm', true).then(npmPath => {
       core.debug(`npm at "${npmPath}"`)
-      return exec.exec(quote(npmPath), [
-        '--prefix',
-        core.getInput('package-directory'),
-        'ci'
-      ])
+      return exec.exec(quote(npmPath), ['ci'], execOptions)
     })
   }
 }
@@ -2566,7 +2568,11 @@ const verifyCypressBinary = () => {
     CYPRESS_CACHE_FOLDER
   )
   return io.which('npx', true).then(npxPath => {
-    return exec.exec(quote(npxPath), ['cypress', 'verify'])
+    return exec.exec(
+      quote(npxPath),
+      ['cypress', 'verify'],
+      execOptions
+    )
   })
 }
 
@@ -2596,7 +2602,7 @@ const buildAppMaybe = () => {
 
   core.debug(`building application using "${buildApp}"`)
 
-  return exec.exec(buildApp)
+  return exec.exec(buildApp, [], execOptions)
 }
 
 const startServerMaybe = () => {
@@ -2639,7 +2645,7 @@ const startServerMaybe = () => {
     )
     core.debug('without waiting for the promise to resolve')
 
-    exec.exec(quote(toolPath), toolArguments)
+    exec.exec(quote(toolPath), toolArguments, execOptions)
   })
 }
 
@@ -2758,7 +2764,10 @@ const runTests = () => {
         `in working directory "${workingDirectory}"`
       )
     }
-    return exec.exec(quote(npxPath), cmd, options)
+    return exec.exec(quote(npxPath), cmd, {
+      ...execOptions,
+      ...options
+    })
   })
 }
 
