@@ -42,12 +42,12 @@ const homeDirectory = path.join(
   core.getInput('package-directory')
 )
 
-core.debug('home directory ffs: ' + homeDirectory)
-
 const useYarn = fs.existsSync('yarn.lock')
-const lockFilename = useYarn
-  ? 'yarn.lock'
-  : 'package-lock.json'
+const lockFilename = path.join(
+  core.getInput('package-directory'),
+  useYarn ? 'yarn.lock' : 'package-lock.json'
+)
+
 const lockHash = hasha.fromFileSync(lockFilename)
 const platformAndArch = `${process.platform}-${process.arch}`
 
